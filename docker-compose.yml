@@ -1,0 +1,16 @@
+services:
+  api:
+    image: spotitube-img
+    ports:
+      - "8080:8080"
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: spotitube
+      MYSQL_USER: sa
+      MYSQL_PASSWORD: Geheim_101
+    ports:
+      - "4406:3306"
+    volumes:
+      - ./db_init.sql:/docker-entrypoint-initdb.d/db_init.sql
