@@ -1,104 +1,96 @@
+DROP DATABASE IF EXISTS spotitube;
 CREATE DATABASE IF NOT EXISTS spotitube;
 USE spotitube;
 
-CREATE TABLE IF NOT EXISTS song (
-    id INT NOT NULL AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    performer VARCHAR(255) NOT NULL,
-    url VARCHAR(255) NOT NULL,
-    album VARCHAR(255) NOT NULL,
+CREATE TABLE IF NOT EXISTS tracks (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR (100) NOT NULL,
+    performer VARCHAR(100) NOT NULL,
     duration INT NOT NULL,
-    CONSTRAINT PK_Id PRIMARY KEY(id),
-    CONSTRAINT UN_perf_title UNIQUE(performer, title)
+    trackType ENUM('SONG', 'VIDEO') NOT NULL,
+    album VARCHAR(100),
+    playcount INT,
+    publicationDate DATE,
+    description MEDIUMTEXT,
+    CONSTRAINT UN_track UNIQUE (title, performer, trackType)
 );
 
-CREATE TABLE IF NOT EXISTS video(
-    id INT NOT NULL AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    performer VARCHAR(255) NOT NULL,
-    url VARCHAR(255) NOT NULL,
-    publicationDate DATE NOT NULL,
-    description LONGTEXT NOT NULL,
-    duration INT NOT NULL,
-    playcount INT NOT NULL,
-    CONSTRAINT PK_Id PRIMARY KEY(id),
-    CONSTRAINT UN_perf_title UNIQUE(performer, title)
-);
-
-CREATE TABLE IF NOT EXISTS owner(
-    id INT NOT NULL AUTO_INCREMENT,
-    username VARCHAR(255) NOT NULL,
+CREATE TABLE IF NOT EXISTS users (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    CONSTRAINT PK_Id PRIMARY KEY(id),
-    CONSTRAINT UN_user_pass UNIQUE(username, password)
+    token VARCHAR(255)
 );
 
-CREATE TABLE IF NOT EXISTS playlist(
-    id INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS playlists (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    owner_id INT NOT NULL,
-    CONSTRAINT PK_Id PRIMARY KEY(id),
-    CONSTRAINT FK_Owner_Playlist FOREIGN KEY (owner_id) REFERENCES owner(id) ON DELETE CASCADE
+    user_id INT NOT NULL,
+    CONSTRAINT FK_users_Playlist FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS playlist_song (
+CREATE TABLE IF NOT EXISTS playlist_tracks (
     playlist_id INT NOT NULL,
-    song_id INT NOT NULL,
-    offlineAvailable INT NOT NULL, -- 0 false 1 true
-    CONSTRAINT PK_Playlist_Song PRIMARY KEY (playlist_id, song_id),
-    CONSTRAINT FK_Playlist_Song_Playlist FOREIGN KEY (playlist_id) REFERENCES playlist(id) ON DELETE CASCADE,
-    CONSTRAINT FK_Playlist_Song_Song FOREIGN KEY (song_id) REFERENCES song(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS playlist_video (
-    playlist_id INT NOT NULL,
-    video_id INT NOT NULL,
-    offlineAvailable INT NOT NULL, -- 0 false 1 true
-    CONSTRAINT PK_Playlist_Video PRIMARY KEY (playlist_id, video_id),
-    CONSTRAINT FK_Playlist_Video_Playlist FOREIGN KEY (playlist_id) REFERENCES playlist(id) ON DELETE CASCADE,
-    CONSTRAINT FK_Playlist_Video_Video FOREIGN KEY (video_id) REFERENCES video(id) ON DELETE CASCADE
+    track_id INT NOT NULL,
+    offlineAvailable BOOLEAN NOT NULL, -- 0 false 1 true
+    PRIMARY KEY (playlist_id, track_id),
+    CONSTRAINT FK_playlist_track_playlist FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE,
+    CONSTRAINT FK_playlist_track_track FOREIGN KEY (track_id) REFERENCES tracks(id) ON DELETE CASCADE
 );
 
 -- ADD SONGS TO THE DB
-INSERT INTO song (title, performer, url, album, duration)
+INSERT INTO tracks (title, performer, duration, trackType, album, playcount, publicationDate, description)
 VALUES
-    ('Shape of You', 'Ed Sheeran', 'https://example.com/shapeofyou', 'Divide', 240),
-    ('Blinding Lights', 'The Weeknd', 'https://example.com/blindinglights', 'After Hours', 200),
-    ('Bohemian Rhapsody', 'Queen', 'https://example.com/bohemianrhapsody', 'A Night at the Opera', 355),
-    ('Rolling in the Deep', 'Adele', 'https://example.com/rollinginthedeep', '21', 228),
-    ('Lose Yourself', 'Eminem', 'https://example.com/loseyourself', '8 Mile', 326);
+    ('Fix You', 'Coldplay', 295, 'SONG', 'X&Y', NULL, NULL, NULL),
+    ('Shape of You', 'Ed Sheeran', 233, 'SONG', 'Divide', NULL, NULL, NULL),
+    ('Blinding Lights', 'The Weeknd', 200, 'SONG', 'After Hours', NULL, NULL, NULL),
+    ('Smells Like Teen Spirit', 'Nirvana', 301, 'SONG', 'Nevermind', NULL, NULL, NULL);
 
 -- ADD VIDEOS TO THE DB
-INSERT INTO video (title, performer, url, publicationDate, description, duration, playCount)
+INSERT INTO tracks (title, performer, duration, trackType, album, playcount, publicationDate, description)
 VALUES
-    ('Blinding Lights', 'The Weeknd', 'https://example.com/blinding-lights', '2020-03-20', 'Official music video for The Weeknd''s hit song Blinding Lights.', 200, 1),
-    ('Shape of You', 'Ed Sheeran', 'https://example.com/shape-of-you', '2017-01-06', 'Music video for Ed Sheeran''s chart-topping single Shape of You.', 233, 2),
-    ('Bad Guy', 'Billie Eilish', 'https://example.com/bad-guy', '2019-03-29', 'The music video for Billie Eilish''s popular track Bad Guy.', 194, 3),
-    ('Levitating', 'Dua Lipa', 'https://example.com/levitating', '2020-10-01', 'Dua Lipa''s Levitating featuring a futuristic music video.', 203, 4),
-    ('Uptown Funk', 'Mark Ronson ft. Bruno Mars', 'https://example.com/uptown-funk', '2014-11-10', 'Mark Ronson and Bruno Mars team up for the energetic Uptown Funk music video.', 270, 6);
+    ('Fix You as video', 'Coldplay', 295, 'VIDEO', NULL, 1200000, '2005-09-05', 'Official music video'),
+    ('Shape of You as video', 'Ed Sheeran', 233, 'VIDEO', NULL, 3500000, '2017-01-06', 'Official music video'),
+    ('Blinding Lights as video', 'The Weeknd', 200, 'VIDEO', NULL, 4200000, '2019-11-29', 'Official music video'),
+    ('Smells Like Teen Spirit as video', 'Nirvana', 301, 'VIDEO', NULL, 5000000, '1991-09-10', 'Official music video');
 
--- ADDING OWNERS TO THE DB
-INSERT INTO owner (username, password)
-    VALUES ('meron', 'MySuperSecretPassword12341'),
-           ('john', 'password');
-
--- ADDING A PLAYLIST WITH AN OWNER TO THE DB
-INSERT INTO playlist (name, owner_id)
+-- ADDING USERS TO THE DB
+INSERT INTO users (username, password)
     VALUES
-        ('firstPlaylist', 1),
-        ('secondPlaylist', 1),
-        ('thirdPlaylist', 2),
-        ('fourthPlaylist', 2);
+        ('meron', 'MySuperSecretPassword12341'),
+        ('john', 'password');
 
--- ADDING A SONG TO A  PLAYLIST IN THE DB
-INSERT INTO playlist_song (playlist_id, song_id, offlineAvailable)
-    VALUES
-        (1, 1, 0), (1, 2, 0), (2, 3, 1), (2, 5, 0),
-        (3, 2, 0), (3, 3, 1), (3, 4, 0), (4, 1, 1), (4, 5, 0);
+INSERT INTO playlists (name, user_id)
+VALUES
+    ('Favorites', 1),
+    ('Workout Mix', 1),
+    ('Chill Vibes', 2);
 
--- ADDING A VIDEO TO A PLAYLIST IN THE DB
-INSERT INTO playlist_video (playlist_id, video_id, offlineAvailable)
-    VALUES
-        (1, 1, 1), (1, 2, 1), (2, 4, 1), (2, 3, 1),
-        (4, 1, 1), (4, 5, 1), (3, 3, 1);
+INSERT INTO playlist_tracks (playlist_id, track_id, offlineAvailable)
+VALUES
+-- Favorites (playlist 1)
+(1, 1, 1),  -- song
+(1, 2, 0),  -- song
+(1, 5, 1),  -- video
+(1, 6, 0),  -- video
+
+-- Workout Mix (playlist 2)
+(2, 3, 0),  -- song
+(2, 7, 1),  -- video
+(2, 2, 0),  -- song
+(2, 6, 1),  -- video
+
+-- Chill Vibes (playlist 3)
+(3, 4, 1),  -- song
+(3, 1, 0),  -- song
+(3, 8, 1),  -- video
+(3, 5, 0);  -- video
+
+
+
+
+
+
+
+
 
