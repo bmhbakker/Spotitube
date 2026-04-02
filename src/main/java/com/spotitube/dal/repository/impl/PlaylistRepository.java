@@ -1,6 +1,5 @@
 package com.spotitube.dal.repository.impl;
 
-import com.spotitube.api.dto.response.PlaylistResponse;
 import com.spotitube.config.DBConnection;
 import com.spotitube.dal.repository.IPlaylistRepository;
 import com.spotitube.domain.model.Playlist;
@@ -17,58 +16,50 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistRepository implements IPlaylistRepository {
-    private final DBConnection dbConnection;
-    private final PlaylistMapper playlistMapper;
-    private final PlaylistService playlistService;
+    private DBConnection dbConnection;
+    private PlaylistMapper playlistMapper;
+
+    public PlaylistRepository() { } //ONLY NEEDED FOR PROXYING
 
     @Inject
-    public PlaylistRepository(DBConnection dbConnection, PlaylistMapper playlistMapper, PlaylistService playlistService) {
+    public PlaylistRepository(DBConnection dbConnection, PlaylistMapper playlistMapper) {
         this.dbConnection = dbConnection;
         this.playlistMapper = playlistMapper;
-        this.playlistService = playlistService;
     }
 
     @Override
-    public PlaylistResponse getPlaylists(int currentUserId) {
-        return refreshPlaylists(currentUserId);
+    public List<Playlist> getPlaylists(int currentUserId) {
+        return fetchPlaylists(currentUserId);
     }
 
     @Override
-    public PlaylistResponse getPlaylist(int playlistId, int currentUserId) {
-        //Even though we only need to fetch one playlist here the buildPlaylistResponse works with a list
-        List<Playlist> playlists = getAllPlaylistsAsList(currentUserId, playlistId);
-        return playlistService.buildPlaylistResponse(playlists);
+    public List<Playlist> getPlaylist(int playlistId, int currentUserId) {
+        return getAllPlaylistsAsList(currentUserId, playlistId);
     }
 
     @Override
-    public PlaylistResponse addPlaylist(String playlistName, int currentUserId) {
+    public void addPlaylist(String playlistName, int currentUserId) {
         addPlaylistToDB(playlistName, currentUserId);
-        return refreshPlaylists(currentUserId);
     }
 
     @Override
-    public PlaylistResponse deletePlaylist(int playlistId, int currentUserId) {
+    public void deletePlaylist(int playlistId) {
         removePlaylistFromDB(playlistId);
-        return refreshPlaylists(currentUserId);
     }
 
     @Override
-    public PlaylistResponse updatePlaylistName(int playlistId, String newPlaylistName, int currentUserId) {
+    public void updatePlaylistName(int playlistId, String newPlaylistName) {
         editPlaylist(playlistId, newPlaylistName);
-        return refreshPlaylists(currentUserId);
     }
 
     @Override
-    public PlaylistResponse addTrackToPlaylist(int playlistId, int trackId, boolean offlineAvailable, int currentUserId) {
+    public void addTrackToPlaylist(int playlistId, int trackId, boolean offlineAvailable) {
         String insertSQL = "INSERT INTO playlist_tracks (playlist_id, track_id, offlineAvailable) VALUES (?, ?, ?)";
         executeInsert(playlistId, trackId, offlineAvailable, insertSQL);
-
-        List<Playlist> playlists = getAllPlaylistsAsList(currentUserId, playlistId);
-        return playlistService.buildPlaylistResponse(playlists);
     }
 
     @Override
-    public PlaylistResponse removeTrackFromPlaylist(int playlistId, int trackId, int currentUserId) {
+    public void removeTrackFromPlaylist(int playlistId, int trackId) {
         String deleteSQL = "DELETE FROM playlist_tracks WHERE playlist_id = ? AND track_id = ?;";
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement pStmt = conn.prepareStatement(deleteSQL);){
@@ -78,11 +69,7 @@ public class PlaylistRepository implements IPlaylistRepository {
         } catch(SQLException e){
             throw new DatabaseException("Failed to delete playlist", e);
         }
-
-        List<Playlist> playlists = getAllPlaylistsAsList(currentUserId, playlistId);
-        return playlistService.buildPlaylistResponse(playlists);
     }
-
 
     private List<Playlist> fetchPlaylists(int currentUserId) {
         return getAllPlaylistsAsList(currentUserId, null);
@@ -164,10 +151,6 @@ public class PlaylistRepository implements IPlaylistRepository {
         } catch (SQLException e) {
             throw new DatabaseException("Error adding track to playlist", e);
         }
-    }
-
-    private PlaylistResponse refreshPlaylists(int currentUserId) {
-        return playlistService.buildPlaylistResponse(fetchPlaylists(currentUserId));
     }
 }
 

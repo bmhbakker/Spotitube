@@ -1,8 +1,11 @@
 package com.spotitube.dal.repository;
 
-import com.spotitube.api.dto.response.TrackResponse;
+import com.spotitube.domain.model.Track;
+
+import java.util.List;
 
 public interface ITrackRepository {
-    TrackResponse getAllTracksInPlaylist(int playlistId);
-    TrackResponse getOptionalTracks(int playlistId);
+    List<Track> getAllTracksInPlaylist(int playlistId);
+
+    List<Track> getOptionalTracks(int playlistId);
 }

@@ -59,7 +59,7 @@ public class Track {
 
     public void setDescription(String description) { this.description = description; }
 
-    public void setAvailableOffline(boolean availableOffline) { this.offlineAvailable = offlineAvailable; }
+    public void setAvailableOffline(boolean offlineAvailable) { this.offlineAvailable = offlineAvailable; }
 
-    public boolean getAvailableOffline() { return offlineAvailable; }
+    public boolean getOfflineAvailable() { return offlineAvailable; }
 }

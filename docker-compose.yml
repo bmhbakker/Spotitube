@@ -3,6 +3,8 @@ services:
     image: spotitube-img
     ports:
         - "8080:8080"
+    depends_on:
+      - db
 
   db:
     image: mysql:5.7
@@ -14,4 +16,4 @@ services:
     ports:
       - "4406:3306"
     volumes:
-      - ./db_init.sql:/docker-entrypoint-initdb.d/db_init.sql
+      - ./db_init_mysql.sql:/docker-entrypoint-initdb.d/db_init.sql

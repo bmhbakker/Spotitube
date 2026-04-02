@@ -1,13 +1,21 @@
 package com.spotitube.dal.repository;
 
-import com.spotitube.api.dto.response.PlaylistResponse;
+import com.spotitube.domain.model.Playlist;
+
+import java.util.List;
 
 public interface IPlaylistRepository {
-    PlaylistResponse getPlaylists(int currentUserId);
-    PlaylistResponse getPlaylist(int playlistId, int currentUserId);
-    PlaylistResponse addPlaylist(String playlistName, int currentUserId);
-    PlaylistResponse deletePlaylist(int playlistId, int currentUserId);
-    PlaylistResponse updatePlaylistName(int playlistId, String newPlaylistName, int currentUserId);
-    PlaylistResponse addTrackToPlaylist(int playlistId, int songId, boolean offlineAvailable, int currentUserId);
-    PlaylistResponse removeTrackFromPlaylist(int playlistId, int trackId, int currentUserId);
+    List<Playlist> getPlaylists(int currentUserId);
+
+    List<Playlist> getPlaylist(int playlistId, int currentUserId);
+
+    void addPlaylist(String playlistName, int currentUserId);
+
+    void deletePlaylist(int playlistId);
+
+    void updatePlaylistName(int playlistId, String newPlaylistName);
+
+    void addTrackToPlaylist(int playlistId, int trackId, boolean offlineAvailable);
+
+    void removeTrackFromPlaylist(int playlistId, int trackId);
 }

@@ -11,7 +11,9 @@ public class PlaylistResponse {
     private List<Playlist> playlists;
     private int length;
 
-    public PlaylistResponse() {
+    public PlaylistResponse(){}
+
+    public PlaylistResponse(List<Playlist> playlists, int length) {
         this.playlists = new ArrayList<>();
         this.length = 0;
     }

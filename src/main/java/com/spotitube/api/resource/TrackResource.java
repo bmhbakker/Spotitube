@@ -1,44 +1,31 @@
 package com.spotitube.api.resource;
 
-import com.spotitube.dal.repository.ITrackRepository;
-import com.spotitube.dal.repository.impl.LoginRepository;
-import com.spotitube.domain.model.User;
 import com.spotitube.api.dto.response.TrackResponse;
+import com.spotitube.service.TrackService;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
 @Path("/tracks")
 public class TrackResource {
-    private LoginRepository loginRepository;
-    private ITrackRepository trackRepository;
+    private TrackService trackService;
+
+    public TrackResource() {
+    } //ONLY NEEDED FOR PROXYING
+
+    @Inject
+    public TrackResource(TrackService trackService) {
+        this.trackService = trackService;
+    }
 
     @GET
     @Produces("application/json")
     public Response getTracks(@QueryParam("token") String requestToken, @QueryParam("forPlaylist") int playlistId) {
-        try {
-            User user = loginRepository.getUserByToken(requestToken);
-
-            if (user == null) {
-                throw new NotAuthorizedException("Invalid token");
-            }
-
-            TrackResponse trackResponse = trackRepository.getOptionalTracks(playlistId);
-            return Response.ok(trackResponse).build();
-        } catch (Exception e){
-            throw new InternalServerErrorException("Could not fetch tracks");
-        }
-    }
-
-
-    @Inject
-    public void setTrackRepository(ITrackRepository trackRepository) {
-        this.trackRepository = trackRepository;
-    }
-
-    @Inject
-    public void setLoginRepository(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
+        TrackResponse response = trackService.getOptionalTracks(playlistId, requestToken);
+        return Response.ok(response).build();
     }
 }
 

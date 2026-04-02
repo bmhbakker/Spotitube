@@ -1,6 +1,5 @@
 package com.spotitube.dal.repository.impl;
 
-import com.spotitube.api.dto.helper.AuthCandidate;
 import com.spotitube.config.DBConnection;
 import com.spotitube.dal.repository.ILoginRepository;
 import com.spotitube.domain.model.User;
@@ -18,8 +17,11 @@ import java.sql.SQLException;
 
 @Default
 public class LoginRepository implements ILoginRepository {
-    private final DBConnection dbConnection;
-    private final UserMapper userMapper;
+    private DBConnection dbConnection;
+    private UserMapper userMapper;
+
+    public LoginRepository() {
+    }  //ONLY NEEDED FOR PROXYING
 
     @Inject
     public LoginRepository(DBConnection dbConnection, UserMapper userMapper) {
@@ -27,71 +29,74 @@ public class LoginRepository implements ILoginRepository {
         this.userMapper = userMapper;
     }
 
-
-    public AuthCandidate authenticate(String username, String password) {
+    @Override
+    public User findUserByUsername(String username) {
         String SelectSQL = "SELECT id, username, password FROM users WHERE username = ?";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement pStmt = conn.prepareStatement(SelectSQL)) {
+
             pStmt.setString(1, username);
 
             try (ResultSet rs = pStmt.executeQuery()) {
                 if (rs.next()) {
-                    String storedPassword = rs.getString("password");
-
-                    if (storedPassword.equals(password)) {
-                        return new AuthCandidate(rs.getInt("id"), rs.getString("username"));
-                    }
-                }
-            }
-            return null; //invalid username or password
-
-        } catch (SQLException e) {
-            throw new DatabaseException("Failed to fetch password from user", e);
-        }
-    }
-
-    public User saveTokenForUser(int id, String token) {
-        String updateSQL = "UPDATE users SET token = ? WHERE id = ?";
-        String selectSQL = "SELECT username FROM users WHERE id = ?";
-
-        try (Connection conn = dbConnection.getConnection()) {
-            try (PreparedStatement pStmt = conn.prepareStatement(updateSQL)) {
-                pStmt.setString(1, token);
-                pStmt.setInt(2, id);
-                pStmt.executeUpdate();
-            }
-
-            try (PreparedStatement pStmt = conn.prepareStatement(selectSQL)) {
-                pStmt.setInt(1, id);
-                ResultSet rs = pStmt.executeQuery();
-                if (rs.next()) {
-                    return userMapper.mapRow(id, rs.getString("username"), token);
+                    return userMapper.mapWithPassword(rs);
                 } else {
-                    throw new NotFoundException("User not found");
+                    throw new NotFoundException("User not found with username: " + username);
                 }
             }
+
         } catch (SQLException e) {
-            throw new DatabaseException("Could not save token or retrieve user", e);
+            throw new DatabaseException("Failed to fetch user by username", e);
         }
     }
-
 
     @Override
-    public User getUserByToken(String token) {
+    public User saveToken(int id, String token) {
+        String updateSQL = "UPDATE users SET token = ? WHERE id = ?";
+        String selectSQL = "SELECT id, username FROM users WHERE id = ?";
+
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement pStmt = conn.prepareStatement(updateSQL)) {
+            pStmt.setString(1, token);
+            pStmt.setInt(2, id);
+            pStmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseException("Failed to save token", e);
+        }
+
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement pStmt = conn.prepareStatement(selectSQL)) {
+            pStmt.setInt(1, id);
+
+            try (ResultSet rs = pStmt.executeQuery()) {
+                if (rs.next()) {
+                    return userMapper.mapRow(rs, token);
+                } else {
+                    throw new NotFoundException("User not found with id: " + id);
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Failed to fetch user after saving token", e);
+        }
+    }
+
+    @Override
+    public User findUserByToken(String token) {
         String SelectSQL = "SELECT id, username FROM users where token = ?";
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement pStmt = conn.prepareStatement(SelectSQL)) {
             pStmt.setString(1, token);
+
             try (ResultSet rs = pStmt.executeQuery()) {
                 if (rs.next()) {
                     return userMapper.mapRow(rs, token);
+                } else {
+                    throw new NotAuthorizedException("Invalid token");
                 }
-                throw new NotAuthorizedException("Invalid token");
             }
         } catch (SQLException e) {
             throw new DatabaseException("Failed to fetch user by token", e);
         }
     }
 }
-
