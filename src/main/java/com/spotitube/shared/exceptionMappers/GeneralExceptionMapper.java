@@ -6,9 +6,10 @@ import jakarta.ws.rs.ext.Provider;
 @Provider
 public class GeneralExceptionMapper implements ExceptionMapper<Throwable> {
     public Response toResponse(Throwable ex) {
+        ex.printStackTrace();
+
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
-                entity("Something went wrong - GeneralException").
-                type("text/plain").
+                entity(ex.getClass().getSimpleName() + ": " + ex.getMessage()).
                 build();
     }
 }

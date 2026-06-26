@@ -1,0 +1,201 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PlaylistResource</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.spotitube.api.resource</a>
+</div>
+
+<h1>Coverage Summary for Class: PlaylistResource (com.spotitube.api.resource)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PlaylistResource</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95%
+  </span>
+  <span class="absValue">
+    (19/20)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.spotitube.api.resource;
+&nbsp;
+&nbsp;import com.spotitube.api.dto.request.PlaylistRequest;
+&nbsp;import com.spotitube.api.dto.request.TrackRequest;
+&nbsp;import com.spotitube.api.dto.response.PlaylistResponse;
+&nbsp;import com.spotitube.api.dto.response.TrackResponse;
+&nbsp;import com.spotitube.service.PlaylistService;
+&nbsp;import com.spotitube.service.TrackService;
+&nbsp;import jakarta.inject.Inject;
+&nbsp;import jakarta.ws.rs.*;
+&nbsp;import jakarta.ws.rs.core.Response;
+&nbsp;
+&nbsp;@Path(&quot;/playlists&quot;)
+&nbsp;public class PlaylistResource {
+&nbsp;    private PlaylistService playlistService;
+&nbsp;    private TrackService trackService;
+&nbsp;
+<b class="nc">&nbsp;    public PlaylistResource() {</b>
+&nbsp;    } //ONLY NEEDED FOR PROXYING
+&nbsp;
+&nbsp;    @Inject
+<b class="fc">&nbsp;    public PlaylistResource(PlaylistService playlistService, TrackService trackService) {</b>
+&nbsp;
+<b class="fc">&nbsp;        this.playlistService = playlistService;</b>
+<b class="fc">&nbsp;        this.trackService = trackService;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GET
+&nbsp;    @Produces(&quot;application/json&quot;)
+&nbsp;    public Response getPlaylists(@QueryParam(&quot;token&quot;) String requestToken) {
+<b class="fc">&nbsp;        PlaylistResponse response = playlistService.getPlaylists(requestToken);</b>
+<b class="fc">&nbsp;        return Response.ok(response).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GET
+&nbsp;    @Path(&quot;/{id}&quot;)
+&nbsp;    @Produces(&quot;application/json&quot;)
+&nbsp;    public Response getPlaylist(@QueryParam(&quot;token&quot;) String requestToken, @PathParam(&quot;id&quot;) int id) {
+<b class="fc">&nbsp;        PlaylistResponse response = playlistService.getPlaylist(id, requestToken);</b>
+<b class="fc">&nbsp;        return Response.ok(response).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GET
+&nbsp;    @Path(&quot;/{id}/tracks&quot;)
+&nbsp;    @Produces(&quot;application/json&quot;)
+&nbsp;    public Response getTracksInPlaylist(@QueryParam(&quot;token&quot;) String requestToken, @PathParam(&quot;id&quot;) int id) {
+<b class="fc">&nbsp;        TrackResponse response = trackService.getTracksInPlaylist(id, requestToken);</b>
+<b class="fc">&nbsp;        return Response.ok(response).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @POST
+&nbsp;    @Consumes(&quot;application/json&quot;)
+&nbsp;    @Produces(&quot;application/json&quot;)
+&nbsp;    public Response addPlaylist(@QueryParam(&quot;token&quot;) String requestToken, PlaylistRequest request) {
+<b class="fc">&nbsp;        PlaylistResponse response = playlistService.addPlaylist(request, requestToken);</b>
+<b class="fc">&nbsp;        return Response.ok(response).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DELETE
+&nbsp;    @Path(&quot;/{id}&quot;)
+&nbsp;    @Consumes(&quot;application/json&quot;)
+&nbsp;    @Produces(&quot;application/json&quot;)
+&nbsp;    public Response deletePlaylist(@QueryParam(&quot;token&quot;) String requestToken, @PathParam(&quot;id&quot;) int id) {
+<b class="fc">&nbsp;        PlaylistResponse response = playlistService.deletePlaylist(id, requestToken);</b>
+<b class="fc">&nbsp;        return Response.ok(response).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //
+&nbsp;    @PUT
+&nbsp;    @Path(&quot;/{id}&quot;)
+&nbsp;    @Consumes(&quot;application/json&quot;)
+&nbsp;    @Produces(&quot;application/json&quot;)
+&nbsp;    public Response updatePlaylistName(@QueryParam(&quot;token&quot;) String requestToken, @PathParam(&quot;id&quot;) int id, PlaylistRequest request) {
+<b class="fc">&nbsp;        PlaylistResponse response = playlistService.updatePlaylistName(id, request, requestToken);</b>
+<b class="fc">&nbsp;        return Response.ok(response).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @POST
+&nbsp;    @Path(&quot;/{playlistId}/tracks&quot;)
+&nbsp;    @Consumes(&quot;application/json&quot;)
+&nbsp;    @Produces(&quot;application/json&quot;)
+&nbsp;    public Response updatePlaylistTracks(@QueryParam(&quot;token&quot;) String requestToken, @PathParam(&quot;playlistId&quot;) int playlistId, TrackRequest request) {
+<b class="fc">&nbsp;        PlaylistResponse response = playlistService.addTrackToPlaylist(playlistId, request, requestToken);</b>
+<b class="fc">&nbsp;        return Response.ok(response).build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DELETE
+&nbsp;    @Path(&quot;/{playlistId}/tracks/{trackId}&quot;)
+&nbsp;    @Consumes(&quot;application/json&quot;)
+&nbsp;    @Produces(&quot;application/json&quot;)
+&nbsp;    public Response deleteTrackFromPlaylist(@QueryParam(&quot;token&quot;) String requestToken, @PathParam(&quot;playlistId&quot;) int playlistId, @PathParam(&quot;trackId&quot;) int trackId) {
+<b class="fc">&nbsp;        PlaylistResponse response = playlistService.deleteTrackFromPlaylist(playlistId, trackId, requestToken);</b>
+<b class="fc">&nbsp;        return Response.ok(response).build();</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-26 16:58</div>
+</div>
+</body>
+</html>

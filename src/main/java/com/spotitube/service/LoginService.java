@@ -2,7 +2,6 @@ package com.spotitube.service;
 
 import com.spotitube.api.dto.helper.AuthCandidate;
 import com.spotitube.dal.repository.ILoginRepository;
-import com.spotitube.dal.repository.impl.LoginRepository;
 import com.spotitube.domain.model.User;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotAuthorizedException;
@@ -16,7 +15,7 @@ public class LoginService {
     public LoginService() { } //ONLY NEEDED FOR PROXYING
 
     @Inject
-    public LoginService(LoginRepository loginRepository) {
+    public LoginService(ILoginRepository loginRepository) {
         this.loginRepository = loginRepository;
     }
 

@@ -1,0 +1,261 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PlaylistService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.spotitube.service</a>
+</div>
+
+<h1>Coverage Summary for Class: PlaylistService (com.spotitube.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PlaylistService</td>
+<td class="coverageStat">
+  <span class="percent">
+    30%
+  </span>
+  <span class="absValue">
+    (3/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    26.3%
+  </span>
+  <span class="absValue">
+    (10/38)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PlaylistService$MockitoMock$7jXj7Qj6</td>
+  </tr>
+  <tr>
+    <td class="name">PlaylistService$MockitoMock$7jXj7Qj6$auxiliary$7c8iMPwN</td>
+  </tr>
+  <tr>
+    <td class="name">PlaylistService$MockitoMock$7jXj7Qj6$auxiliary$egIfME47</td>
+  </tr>
+  <tr>
+    <td class="name">PlaylistService$MockitoMock$7jXj7Qj6$auxiliary$fxg4Q96D</td>
+  </tr>
+  <tr>
+    <td class="name">PlaylistService$MockitoMock$7jXj7Qj6$auxiliary$g9RAvwUT</td>
+  </tr>
+  <tr>
+    <td class="name">PlaylistService$MockitoMock$7jXj7Qj6$auxiliary$gSr5pktX</td>
+  </tr>
+  <tr>
+    <td class="name">PlaylistService$MockitoMock$7jXj7Qj6$auxiliary$jCVZimXf</td>
+  </tr>
+  <tr>
+    <td class="name">PlaylistService$MockitoMock$7jXj7Qj6$auxiliary$P71GfaYc</td>
+  </tr>
+  <tr>
+    <td class="name">PlaylistService$MockitoMock$7jXj7Qj6$auxiliary$tIB2Ybe1</td>
+  </tr>
+  <tr>
+    <td class="name">PlaylistService$MockitoMock$7jXj7Qj6$auxiliary$vPKtR7hv</td>
+  </tr>
+  <tr>
+    <td class="name">PlaylistService$MockitoMock$7jXj7Qj6$auxiliary$Yk5l7hGa</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    30%
+  </span>
+  <span class="absValue">
+    (3/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    26.3%
+  </span>
+  <span class="absValue">
+    (10/38)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.spotitube.service;
+&nbsp;
+&nbsp;import com.spotitube.api.dto.request.PlaylistRequest;
+&nbsp;import com.spotitube.api.dto.request.TrackRequest;
+&nbsp;import com.spotitube.api.dto.response.PlaylistResponse;
+&nbsp;import com.spotitube.api.dto.response.TrackResponse;
+&nbsp;import com.spotitube.dal.repository.IPlaylistRepository;
+&nbsp;import com.spotitube.domain.model.Playlist;
+&nbsp;import com.spotitube.domain.model.User;
+&nbsp;import jakarta.enterprise.context.ApplicationScoped;
+&nbsp;import jakarta.inject.Inject;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@ApplicationScoped
+&nbsp;public class PlaylistService {
+&nbsp;    private LoginService loginService;
+&nbsp;    private IPlaylistRepository playlistRepository;
+&nbsp;    private TrackService trackService;
+&nbsp;
+<b class="nc">&nbsp;    public PlaylistService() {</b>
+&nbsp;    } //ONLY NEEDED FOR PROXYING
+&nbsp;
+&nbsp;    @Inject
+<b class="fc">&nbsp;    public PlaylistService(TrackService trackService, IPlaylistRepository playlistRepository, LoginService loginService) {</b>
+<b class="fc">&nbsp;        this.trackService = trackService;</b>
+<b class="fc">&nbsp;        this.playlistRepository = playlistRepository;</b>
+<b class="fc">&nbsp;        this.loginService = loginService;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public PlaylistResponse getPlaylists(String requestToken) {
+<b class="fc">&nbsp;        User user = loginService.validateAuth(requestToken);</b>
+&nbsp;
+<b class="fc">&nbsp;        List&lt;Playlist&gt; playlists = playlistRepository.getPlaylists(user.getId());</b>
+<b class="fc">&nbsp;        return buildPlaylistResponse(playlists);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public PlaylistResponse getPlaylist(int playlistId, String requestToken) {
+<b class="nc">&nbsp;        User user = loginService.validateAuth(requestToken);</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Playlist&gt; playlists = playlistRepository.getPlaylist(playlistId, user.getId());</b>
+<b class="nc">&nbsp;        return buildPlaylistResponse(playlists);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public PlaylistResponse addPlaylist(PlaylistRequest request, String requestToken) {
+<b class="nc">&nbsp;        User user = loginService.validateAuth(requestToken);</b>
+<b class="nc">&nbsp;        playlistRepository.addPlaylist(request.name, user.getId());</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Playlist&gt; playlists = playlistRepository.getPlaylists(user.getId());</b>
+<b class="nc">&nbsp;        return buildPlaylistResponse(playlists);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public PlaylistResponse deletePlaylist(int id, String requestToken) {
+<b class="nc">&nbsp;        User user = loginService.validateAuth(requestToken);</b>
+<b class="nc">&nbsp;        playlistRepository.deletePlaylist(id);</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Playlist&gt; playlists = playlistRepository.getPlaylists(user.getId());</b>
+<b class="nc">&nbsp;        return buildPlaylistResponse(playlists);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public PlaylistResponse updatePlaylistName(int id, PlaylistRequest request, String requestToken) {
+<b class="nc">&nbsp;        User user = loginService.validateAuth(requestToken);</b>
+<b class="nc">&nbsp;        playlistRepository.updatePlaylistName(id, request.name);</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Playlist&gt; playlists = playlistRepository.getPlaylists(user.getId());</b>
+<b class="nc">&nbsp;        return buildPlaylistResponse(playlists);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public PlaylistResponse addTrackToPlaylist(int playlistId, TrackRequest request, String requestToken) {
+<b class="nc">&nbsp;        User user = loginService.validateAuth(requestToken);</b>
+<b class="nc">&nbsp;        playlistRepository.addTrackToPlaylist(playlistId, request.getId(), request.isOfflineAvailable());</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Playlist&gt; playlists = playlistRepository.getPlaylists(user.getId());</b>
+<b class="nc">&nbsp;        return buildPlaylistResponse(playlists);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public PlaylistResponse deleteTrackFromPlaylist(int playlistId, int trackId, String requestToken) {
+<b class="nc">&nbsp;        User user = loginService.validateAuth(requestToken);</b>
+<b class="nc">&nbsp;        playlistRepository.removeTrackFromPlaylist(playlistId, trackId);</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Playlist&gt; playlists = playlistRepository.getPlaylists(user.getId());</b>
+<b class="nc">&nbsp;        return buildPlaylistResponse(playlists);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public PlaylistResponse buildPlaylistResponse(List&lt;Playlist&gt; playlists) {
+<b class="fc">&nbsp;        PlaylistResponse response = new PlaylistResponse();</b>
+&nbsp;
+<b class="pc">&nbsp;        for (Playlist playlist : playlists) {</b>
+<b class="nc">&nbsp;            TrackResponse tracks = trackService.getTracksInPlaylist(playlist.getId(), null);</b>
+<b class="nc">&nbsp;            playlist.setTracks(tracks.getTracks());</b>
+&nbsp;
+<b class="nc">&nbsp;            response.addDuration(tracks.getLength());</b>
+<b class="nc">&nbsp;            response.addPlaylist(playlist);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return response;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-06-26 16:58</div>
+</div>
+</body>
+</html>

@@ -4,7 +4,6 @@ import com.spotitube.config.DBConnection;
 import com.spotitube.dal.repository.IPlaylistRepository;
 import com.spotitube.domain.model.Playlist;
 import com.spotitube.mapper.PlaylistMapper;
-import com.spotitube.service.PlaylistService;
 import com.spotitube.shared.exception.DatabaseException;
 import jakarta.inject.Inject;
 

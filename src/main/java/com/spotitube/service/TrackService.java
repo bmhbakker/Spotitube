@@ -1,10 +1,8 @@
 package com.spotitube.service;
 
 import com.spotitube.api.dto.response.TrackResponse;
-import com.spotitube.dal.repository.ILoginRepository;
 import com.spotitube.dal.repository.ITrackRepository;
 import com.spotitube.domain.model.Track;
-import com.spotitube.domain.model.User;
 import jakarta.inject.Inject;
 
 import java.util.List;

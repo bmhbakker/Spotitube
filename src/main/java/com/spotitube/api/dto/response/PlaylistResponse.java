@@ -6,10 +6,9 @@ import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 
-@Singleton
 public class PlaylistResponse {
-    private List<Playlist> playlists;
-    private int length;
+    private List<Playlist> playlists = new ArrayList<>();
+    private int length = 0;
 
     public PlaylistResponse(){}
 

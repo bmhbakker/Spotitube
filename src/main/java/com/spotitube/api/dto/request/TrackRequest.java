@@ -14,4 +14,13 @@ public class TrackRequest {
     public boolean isOfflineAvailable() {
         return offlineAvailable;
     }
+
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setOfflineAvailable(boolean offlineAvailable) {
+        this.offlineAvailable = offlineAvailable;
+    }
 }

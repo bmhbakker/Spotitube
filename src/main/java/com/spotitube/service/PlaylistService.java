@@ -30,14 +30,12 @@ public class PlaylistService {
 
     public PlaylistResponse getPlaylists(String requestToken) {
         User user = loginService.validateAuth(requestToken);
-
         List<Playlist> playlists = playlistRepository.getPlaylists(user.getId());
         return buildPlaylistResponse(playlists);
     }
 
     public PlaylistResponse getPlaylist(int playlistId, String requestToken) {
         User user = loginService.validateAuth(requestToken);
-
         List<Playlist> playlists = playlistRepository.getPlaylist(playlistId, user.getId());
         return buildPlaylistResponse(playlists);
     }
@@ -45,7 +43,6 @@ public class PlaylistService {
     public PlaylistResponse addPlaylist(PlaylistRequest request, String requestToken) {
         User user = loginService.validateAuth(requestToken);
         playlistRepository.addPlaylist(request.name, user.getId());
-
         List<Playlist> playlists = playlistRepository.getPlaylists(user.getId());
         return buildPlaylistResponse(playlists);
     }
@@ -53,7 +50,6 @@ public class PlaylistService {
     public PlaylistResponse deletePlaylist(int id, String requestToken) {
         User user = loginService.validateAuth(requestToken);
         playlistRepository.deletePlaylist(id);
-
         List<Playlist> playlists = playlistRepository.getPlaylists(user.getId());
         return buildPlaylistResponse(playlists);
     }
@@ -61,7 +57,6 @@ public class PlaylistService {
     public PlaylistResponse updatePlaylistName(int id, PlaylistRequest request, String requestToken) {
         User user = loginService.validateAuth(requestToken);
         playlistRepository.updatePlaylistName(id, request.name);
-
         List<Playlist> playlists = playlistRepository.getPlaylists(user.getId());
         return buildPlaylistResponse(playlists);
     }
@@ -69,7 +64,6 @@ public class PlaylistService {
     public PlaylistResponse addTrackToPlaylist(int playlistId, TrackRequest request, String requestToken) {
         User user = loginService.validateAuth(requestToken);
         playlistRepository.addTrackToPlaylist(playlistId, request.getId(), request.isOfflineAvailable());
-
         List<Playlist> playlists = playlistRepository.getPlaylists(user.getId());
         return buildPlaylistResponse(playlists);
     }
@@ -77,14 +71,12 @@ public class PlaylistService {
     public PlaylistResponse deleteTrackFromPlaylist(int playlistId, int trackId, String requestToken) {
         User user = loginService.validateAuth(requestToken);
         playlistRepository.removeTrackFromPlaylist(playlistId, trackId);
-
         List<Playlist> playlists = playlistRepository.getPlaylists(user.getId());
         return buildPlaylistResponse(playlists);
     }
 
     public PlaylistResponse buildPlaylistResponse(List<Playlist> playlists) {
         PlaylistResponse response = new PlaylistResponse();
-
         for (Playlist playlist : playlists) {
             TrackResponse tracks = trackService.getTracksInPlaylist(playlist.getId(), null);
             playlist.setTracks(tracks.getTracks());
